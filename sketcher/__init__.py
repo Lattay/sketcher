@@ -1,5 +1,8 @@
 from .backend import Backend
 from .common import Color
+import random
+import math
+
 name = "sketcher"
 
 
@@ -71,6 +74,16 @@ class Sketch:
 
     def refresh(self):
         self.can.refesh()
+
+
+Sketch.m = math
+Sketch.rd = random
+
+try:
+    import numpy
+    Sketch.np = numpy
+except ModuleNotFoundError:
+    Sketch.np = None
 
 
 def sketch(sk):
