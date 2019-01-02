@@ -1,3 +1,6 @@
 __pycache__
 sketcher/__pycache__
 sketcher/*.pyc
+build
+dist
+sketcher.egg-info
