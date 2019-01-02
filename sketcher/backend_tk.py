@@ -58,7 +58,7 @@ class Backend(CanvasBackend):
 
     def draw_line(self, x1, y1, x2, y2):
         fill = self.stroke_color.hashtag() if self.stroke else ''
-        self.can.create_arc(x1, y1, x2, y2, fill=fill)
+        self.can.create_line(x1, y1, x2, y2, fill=fill)
 
     def draw_rectangle(self, x, y, w, h):
         fill = self.fill_color.hashtag() if self.fill else ''
