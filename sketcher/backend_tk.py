@@ -100,6 +100,7 @@ class Backend(CanvasBackend):
 
     def set_background(self, color):
         self.back_color = color
+        self.can.configure(background=color.hashtag())
 
     def draw_point(self, x, y):
         fill = self.stroke_color.hashtag() if self.stroke else ''
