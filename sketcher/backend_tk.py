@@ -1,7 +1,7 @@
 from .backend_base import CanvasBackend
 from .common import KeyboardState, MouseState, Color
 import tkinter as tk
-from queue import SimpleQueue
+from queue import Queue
 
 
 class Backend(CanvasBackend):
@@ -9,7 +9,7 @@ class Backend(CanvasBackend):
         CanvasBackend.__init__(self)
         self.win = tk.Tk()
         self.can = tk.Canvas(self.win)
-        self.event_queue = SimpleQueue()
+        self.event_queue = Queue()
 
         self.stroke_color = Color('black')
         self.fill_color = Color('red')

@@ -82,7 +82,7 @@ Sketch.rd = random
 try:
     import numpy
     Sketch.np = numpy
-except ModuleNotFoundError:
+except ImportError:
     Sketch.np = None
 
 

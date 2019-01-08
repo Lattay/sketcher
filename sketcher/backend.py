@@ -14,7 +14,7 @@ class NoBackend(BaseException):
 try:
     import tkinter as tk
     have_tk = True
-except:
+except ImportError:
     have_tk = False 
 
 if have_tk:
