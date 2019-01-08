@@ -33,10 +33,10 @@ class Sketch:
         self.can.set_stroke(False)
 
     def fill_color(self, col):
-        self.can.fill_color = Color(col)
+        self.can.set_fill_color(col)
 
     def stroke_color(self, col):
-        self.can.stroke_color = Color(col)
+        self.can.set_stroke_color(col)
 
     def mouse_state(self):
         return self.can.get_mouse_state()
