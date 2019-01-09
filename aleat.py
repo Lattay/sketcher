@@ -1,10 +1,11 @@
-from sketcher import sketch, Sketch
+from sketcher import sketch
+
 
 w, h = 1200, 800
 
 
 @sketch
-class Sk(Sketch):
+class Sk:
     def setup(s):
         s.background('black')
         s.frame(0.001)

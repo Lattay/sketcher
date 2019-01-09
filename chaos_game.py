@@ -1,26 +1,22 @@
 from sketcher import sketch
-import random as rd
 
-w = 800
-h = 800
+w, h = 800, 800
 
-tri = [
-    (w/2, 0),
-    (0, h),
-    (w, h)
-]
+tri = [(w/2, 0), (0, h), (w, h)]
 
 
 @sketch
 class Sk:
-    def setup(sk):
-        sk.size(w, h)
-        sk.frame(0.001)
-        sk.x = rd.random()*w
-        sk.y = rd.random()*h
+    def setup(s):
+        s.size(w, h)
+        s.background('black')
+        s.stroke_color('red')
+        s.x = int(s.rd.random()*w)
+        s.y = int(s.rd.random()*h)
 
-    def loop(sk):
-        sk.point(sk.x, sk.y)
-        i = rd.randint(0, 2)
-        sk.x = 0.5*(tri[i][0] + sk.x)
-        sk.y = 0.5*(tri[i][1] + sk.y)
+    def loop(s):
+        s.point(s.x, s.y)
+        i = s.rd.randint(0, 2)
+        s.x = int(0.5*(tri[i][0] + s.x))
+        s.y = int(0.5*(tri[i][1] + s.y))
+        print(s.x, s.y)
