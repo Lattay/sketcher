@@ -9,6 +9,7 @@ tri = [(w/2, 0), (0, h), (w, h)]
 class Sk:
     def setup(s):
         s.size(w, h)
+        s.frame(0.001)
         s.background('black')
         s.stroke_color('red')
         s.x = int(s.rd.random()*w)
@@ -19,4 +20,3 @@ class Sk:
         i = s.rd.randint(0, 2)
         s.x = int(0.5*(tri[i][0] + s.x))
         s.y = int(0.5*(tri[i][1] + s.y))
-        print(s.x, s.y)
