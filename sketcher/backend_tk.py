@@ -104,7 +104,7 @@ class Backend(CanvasBackend):
 
     def draw_point(self, x, y):
         fill = self.stroke_color.hashtag() if self.stroke else ''
-        self.can.create_line(x, y, x, y, fill=fill)
+        self.can.create_line(x, y, x+1, y, fill=fill)
 
     def draw_line(self, x1, y1, x2, y2):
         fill = self.stroke_color.hashtag() if self.stroke else ''
