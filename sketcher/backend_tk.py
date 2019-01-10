@@ -30,6 +30,8 @@ class Backend(CanvasBackend):
         self.__keyboard_state = KeyboardState()
         self.__mouse_state = MouseState()
 
+        self.__pix = tk.PhotoImage(width=1, height=1)
+
     def init(self):
         self.can.configure(
             width=self.size[0],
@@ -104,7 +106,8 @@ class Backend(CanvasBackend):
 
     def draw_point(self, x, y):
         fill = self.stroke_color.hashtag() if self.stroke else ''
-        self.can.create_line(x, y, x+1, y, fill=fill)
+        self.__pix.put(fill)
+        self.can.create_image((x, y), image=self.__pix)
 
     def draw_line(self, x1, y1, x2, y2):
         fill = self.stroke_color.hashtag() if self.stroke else ''
