@@ -59,6 +59,13 @@ class MouseState:
         self.pressed.clear()
         self.released.clear()
 
+    def clean(self):
+        still_pressed = self.pressed - self.released
+        releasing = self.released.intersection(self.pressed)
+
+        self.pressed = still_pressed
+        self.released = releasing
+
 
 class KeyboardState:
     def __init__(self):
@@ -68,3 +75,10 @@ class KeyboardState:
     def flush(self):
         self.pressed.clear()
         self.released.clear()
+
+    def clean(self):
+        still_pressed = self.pressed - self.released
+        releasing = self.released.intersection(self.pressed)
+
+        self.pressed = still_pressed
+        self.released = releasing

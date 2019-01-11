@@ -20,7 +20,8 @@ class Backend(CanvasBackend):
                 self.event_queue.put((type, ev))
             return adder
 
-        self.can.bind('<Key>', add_event('key'))
+        self.can.bind('<KeyPress>', add_event('key_press'))
+        self.can.bind('<KeyRelease>', add_event('key_release'))
         self.can.bind('<ButtonPress>', add_event('mouse_press'))
         self.can.bind('<ButtonRelease>', add_event('mouse_release'))
         self.can.bind('<Motion>', add_event('mouse_move'))
@@ -39,6 +40,7 @@ class Backend(CanvasBackend):
             background=self.back_color.hashtag()
         )
         self.can.pack()
+        self.win.focus_set()
 
     def start(self, setup, loop):
         setup()
@@ -48,30 +50,38 @@ class Backend(CanvasBackend):
 
     def loop(self):
         self.win.after(int(1000*self.frame), self.loop)
+        self.can.focus_set()
 
         # poll event
-        self.__mouse_state.flush()
-        self.__keyboard_state.flush()
+        self.__mouse_state.clean()
+        self.__keyboard_state.clean()
 
         while not self.event_queue.empty():
-            type, ev = self.event_queue.get()
-            if type == 'key':
-                if ev.char != '':
-                    print(ev.char, ev.keycode, ev.keysym)
-                    self.__keyboard_state.add(ev.char)
+            ev_type, ev = self.event_queue.get()
+            if ev_type == 'key_press':
+                if ev.keysym:
+                    self.__keyboard_state.pressed.add(ev.keysym)
                 else:
                     print(ev.keycode, ev.keysym)
                     raise NotImplementedError
-            elif type == 'mouse_move':
+            elif ev_type == 'key_release':
+                if ev.keysym:
+                    self.__keyboard_state.released.add(ev.keysym)
+                else:
+                    print(ev.keycode, ev.keysym)
+                    raise NotImplementedError
+            elif ev_type == 'mouse_move':
                 self.__mouse_state.pos = (ev.x, ev.y)
 
-            elif type == 'mouse_press':
+            elif ev_type == 'mouse_press':
                 self.__mouse_state.pressed.add(ev.num)
                 self.__mouse_state.pos = (ev.x, ev.y)
 
-            elif type == 'mouse_release':
+            elif ev_type == 'mouse_release':
                 self.__mouse_state.released.add(ev.num)
                 self.__mouse_state.pos = (ev.x, ev.y)
+        self.__mouse_state.clean()
+        self.__keyboard_state.clean()
 
         self.user_loop()
 
