@@ -1,6 +1,7 @@
 from .backend_base import CanvasBackend
 from .common import KeyboardState, MouseState, Color
 import tkinter as tk
+from tkinter import font as tkfont
 from queue import Queue
 
 
@@ -138,7 +139,11 @@ class Backend(CanvasBackend):
         self.can.create_oval(x0, y0, x1, y1, fill=fill, outline=outline)
 
     def draw_text(self, x, y, text, **kwargs):
-        pass
+        if 'font' in kwargs:
+            font = kwargs['font']
+        else:
+            font = tkfont.Font(self.win)
+        self.can.create_text(x, y, text=text, font=font)
 
     def draw_shape(self, shape):
         pass

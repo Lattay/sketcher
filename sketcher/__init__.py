@@ -70,7 +70,7 @@ class Sketch:
         self.can.draw_ellipse(x, y, a, b)
 
     def text(self, x, y, text, **kwargs):
-        pass
+        self.can.draw_text(x, y, text, **kwargs)
 
     def refresh(self):
         self.can.refesh()
