@@ -87,9 +87,7 @@ except ImportError:
 
 
 def sketch(sk):
-    class MySketch(Sketch):
+    class MySketch(Sketch, sk):
         pass
-    MySketch.setup = sk.setup
-    MySketch.loop = sk.loop
     MySketch().start()
     return MySketch
