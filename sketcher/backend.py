@@ -1,4 +1,5 @@
 supported_backends = [
+    "pyglet",
     "tkinter",
 ]
 
@@ -11,13 +12,23 @@ class NoBackend(BaseException):
             "\n".join("- " + back for back in supported_backends)
         )
 
+
 try:
-    import tkinter as tk
+    import pyglet
+    have_pyglet = True
+except ImportError:
+    have_pyglet = False 
+
+
+try:
+    import tkinter
     have_tk = True
 except ImportError:
-    have_tk = False 
+    have_tk = False
 
-if have_tk:
+if have_pyglet:
+    from .backend_pyglet import Backend
+elif have_tk:
     from .backend_tk import Backend
 else:
     raise NoBackend()
