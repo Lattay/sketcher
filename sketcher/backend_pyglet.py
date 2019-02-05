@@ -4,6 +4,17 @@ import pyglet as pg
 from queue import Queue
 
 
+def mouse_button(b):
+    if b == pg.window.mouse.LEFT:
+        return 1
+    elif b == pg.window.mouse.RIGHT:
+        return 3
+    elif b == pg.window.mouse.MIDDLE:
+        return 2
+    else:
+        return 0
+
+
 class Backend(CanvasBackend):
     def __init__(self):
         CanvasBackend.__init__(self)
@@ -14,30 +25,25 @@ class Backend(CanvasBackend):
         self.fill_color = Color('red')
         self.back_color = Color('white')
 
-        def add_event(type):
-            def adder(ev):
-                self.event_queue.put((type, ev))
-            return adder
-
         @self.win.event
         def on_key_press(symbol, modifiers):
-            pass
+            self.event_queue.put(('key_press', (symbol, modifiers)))
 
         @self.win.event
         def on_key_release(symbol, modifiers):
-            pass
+            self.event_queue.put(('key_release', (symbol, modifiers)))
 
         @self.win.event
         def on_mouse_press(x, y, button, modifiers):
-            pass
+            self.event_queue.put(('mouse_press', (x, y, button, modifiers)))
 
         @self.win.event
         def on_mouse_release(x, y, button, modifiers):
-            pass
+            self.event_queue.put(('mouse_release', (x, y, button, modifiers)))
 
         @self.win.event
-        def on_mouse_motion(x, y, button, modifiers):
-            pass
+        def on_mouse_motion(x, y, dx, dy):
+            self.event_queue.put(('mouse_move', (x, y)))
 
         self.user_loop = None
 
@@ -54,15 +60,30 @@ class Backend(CanvasBackend):
         # run main loop
 
     def loop(self):
-        #set focus, make sure next loop will run
-
         # poll event
         self.__mouse_state.clean()
         self.__keyboard_state.clean()
 
         while not self.event_queue.empty():
             # empty event list
-            pass
+            ev_type, ev = self.event_queue.get()
+            if ev_type == 'key_press':
+                self.__keyboard_state.pressed.add(
+                    pg.window.key.symbol_string(ev[0]))
+            elif ev_type == 'key_release':
+                self.__keyboard_state.pressed.add(
+                    pg.window.key.symbol_string(ev[0]))
+            elif ev_type == 'mouse_move':
+                self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
+
+            elif ev_type == 'mouse_press':
+                self.__mouse_state.pressed.add(mouse_button(ev[2]))
+                self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
+
+            elif ev_type == 'mouse_release':
+                self.__mouse_state.pressed.add(mouse_button(ev[2]))
+                self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
+
         self.__mouse_state.clean()
         self.__keyboard_state.clean()
 
@@ -70,7 +91,7 @@ class Backend(CanvasBackend):
 
     def clear(self):
         # clear canvas
-        pass
+        self.win.clear()
 
     def set_fill(self, yes):
         self.fill = yes
@@ -92,7 +113,7 @@ class Backend(CanvasBackend):
 
     def set_size(self, w, h):
         self.size = (w, h)
-        # set canvas size
+        self.win.set_size(w, h)
 
     def set_background(self, color):
         self.back_color = color
