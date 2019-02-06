@@ -87,7 +87,11 @@ except ImportError:
 
 
 def sketch(sk):
-    class MySketch(Sketch, sk):
-        pass
+    if issubclass(sk, Sketch):
+        MySketch = sk
+    else:
+        class MySketch(Sketch, sk):
+            pass
+    MySketch.__name__ = sk.__name__
     MySketch().start()
     return MySketch
