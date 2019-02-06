@@ -1,5 +1,5 @@
 supported_backends = [
-    "pyglet",
+    # "pyglet",  # not ready yet
     "tkinter",
 ]
 
@@ -25,6 +25,7 @@ try:
     have_tk = True
 except ImportError:
     have_tk = False
+have_pyglet = False  # in progress
 
 if have_pyglet:
     from .backend_pyglet import Backend
