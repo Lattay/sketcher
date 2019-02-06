@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sketcher",
-    version="0.0.4",
+    version="0.0.6",
     author="Théo (Lattay) Cavignac",
     author_email="theo.cavignac@gmail.com",
     description="A processing like sketch framework for prototyping.",
