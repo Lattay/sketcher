@@ -15,9 +15,9 @@ class Sketch:
             self.Backend = get_backend()
 
     def start(self):
-        self.can.start(self.setup, self.loop)
         self.can = self.Backend()
         self.can.init()
+        self.can.start(self.setup, self.loop)
 
     def clear(self):
         self.can.clear()
@@ -97,7 +97,7 @@ def sketch(sk):
     else:
         class MySketch(Sketch, sk):
             pass
-    MySketch.Backend = get_backend(config.use_back)
+    MySketch.Backend = get_backend(config.backend_use)
     MySketch.__name__ = sk.__name__
     MySketch().start()
     return MySketch

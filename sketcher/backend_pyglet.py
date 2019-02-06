@@ -22,12 +22,13 @@ def key_symbol(b):
 class Backend(CanvasBackend):
     def __init__(self):
         CanvasBackend.__init__(self)
-        self.win = pg.window.Window()
+        self.win = pg.window.Window(vsync=0)
         self.event_queue = Queue()
 
         self.stroke_color = Color('black')
         self.fill_color = Color('red')
         self.back_color = Color('white')
+        self.batch = pg.graphics.Batch()
 
         @self.win.event
         def on_key_press(symbol, modifiers):
@@ -61,9 +62,13 @@ class Backend(CanvasBackend):
     def start(self, setup, loop):
         setup()
         self.user_loop = loop
-        # run main loop
 
-    def loop(self):
+        # run main loop
+        self.loop()
+        pg.app.run()
+
+    def loop(self, dt=0):
+        pg.clock.schedule_once(self.loop, self.frame)
         # poll event
         self.__mouse_state.clean()
         self.__keyboard_state.clean()
@@ -89,7 +94,10 @@ class Backend(CanvasBackend):
         self.__mouse_state.clean()
         self.__keyboard_state.clean()
 
+        self.win.clear()
         self.user_loop()
+        self.background.draw()
+        self.batch.draw()
 
     def clear(self):
         # clear canvas
@@ -122,10 +130,14 @@ class Backend(CanvasBackend):
         # set background color
 
     def draw_point(self, x, y):
-        pass
+        self.batch.add(1, pg.gl.GL_POINTS, None,
+                       ('v2f', float(x), float(y)),
+                       ('c3B', self.stroke_color.tupple255()))
 
     def draw_line(self, x1, y1, x2, y2):
-        pass
+        self.batch.add(2, pg.gl.GL_LINES, None,
+                       ('v2f', (x1, y1, x2, y2)),
+                       ('c3B', self.stroke_color.tupple255()*2))
 
     def draw_rectangle(self, x, y, w, h):
         pass

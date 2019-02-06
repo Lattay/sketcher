@@ -48,6 +48,9 @@ class Color:
             b = '0' + b
         return '#{}{}{}'.format(r, g, b)
 
+    def tupple255(self):
+        return (int(self.r), int(self.g), int(self.b))
+
 
 class MouseState:
     def __init__(self):
