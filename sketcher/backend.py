@@ -1,9 +1,3 @@
-supported_backends = [
-    # "pyglet",  # not ready yet
-    "tkinter",
-]
-
-
 class NoBackend(BaseException):
     def __init__(self):
         super().__init__(
@@ -13,11 +7,16 @@ class NoBackend(BaseException):
         )
 
 
+supported_backends = [
+    # "pyglet",  # not ready yet
+    "tkinter",
+]
+
 try:
     import pyglet
     have_pyglet = True
 except ImportError:
-    have_pyglet = False 
+    have_pyglet = False
 
 
 try:
@@ -27,9 +26,20 @@ except ImportError:
     have_tk = False
 have_pyglet = False  # in progress
 
-if have_pyglet:
-    from .backend_pyglet import Backend
-elif have_tk:
-    from .backend_tk import Backend
-else:
-    raise NoBackend()
+
+def get_backend(use='auto'):
+    if use == 'auto':
+        if have_pyglet:
+            use = 'pyglet'
+        elif have_tk:
+            use = 'tk'
+        else:
+            use = 'nothing'
+
+    if use == 'pyglet':
+        from .backend_pyglet import Backend
+    elif use == 'tk':
+        from .backend_tk import Backend
+    else:
+        raise NoBackend()
+    return Backend

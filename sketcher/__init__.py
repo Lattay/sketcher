@@ -1,18 +1,23 @@
-from .backend import Backend
+from .backend import get_backend
 from .common import Color
 import random
 import math
+from .config import Config
 
 name = "sketcher"
+
+config = Config()
 
 
 class Sketch:
     def __init__(self):
-        self.can = Backend()
-        self.can.init()
+        if not hasattr(self, 'Backend'):
+            self.Backend = get_backend()
 
     def start(self):
         self.can.start(self.setup, self.loop)
+        self.can = self.Backend()
+        self.can.init()
 
     def clear(self):
         self.can.clear()
@@ -92,6 +97,7 @@ def sketch(sk):
     else:
         class MySketch(Sketch, sk):
             pass
+    MySketch.Backend = get_backend(config.use_back)
     MySketch.__name__ = sk.__name__
     MySketch().start()
     return MySketch

@@ -15,6 +15,10 @@ def mouse_button(b):
         return 0
 
 
+def key_symbol(b):
+    return pg.window.key.symbol_string(b)
+
+
 class Backend(CanvasBackend):
     def __init__(self):
         CanvasBackend.__init__(self)
@@ -68,11 +72,9 @@ class Backend(CanvasBackend):
             # empty event list
             ev_type, ev = self.event_queue.get()
             if ev_type == 'key_press':
-                self.__keyboard_state.pressed.add(
-                    pg.window.key.symbol_string(ev[0]))
+                self.__keyboard_state.pressed.add(key_symbol(ev[0]))
             elif ev_type == 'key_release':
-                self.__keyboard_state.pressed.add(
-                    pg.window.key.symbol_string(ev[0]))
+                self.__keyboard_state.pressed.add(key_symbol(ev[0]))
             elif ev_type == 'mouse_move':
                 self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
 
