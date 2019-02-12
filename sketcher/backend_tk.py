@@ -3,7 +3,18 @@ from .common import KeyboardState, MouseState, Color
 import tkinter as tk
 from tkinter import font as tkfont
 from queue import Queue
+try:
+    from PIL import Image, ImageTk
 
+    def load_image(filename):
+        return ImageTk.PhotoImage(Image.open(filename))
+
+except ImportError:
+    print('PIL not available. Only GIF and PGM images can be opened.')
+    from tkinter import PhotoImage
+
+    def load_image(filename):
+        return PhotoImage(filename)
 
 class Backend(CanvasBackend):
     def __init__(self):
@@ -146,4 +157,15 @@ class Backend(CanvasBackend):
         self.can.create_text(x, y, text=text, font=font)
 
     def draw_shape(self, shape):
-        pass
+        lst = []
+        for x, y in shape.vertex:
+            lst.append(x)
+            lst.append(y)
+        fill = self.fill_color.hashtag() if self.fill else ''
+        outline = self.stroke_color.hashtag() if self.stroke else ''
+        self.can.create_polygon(*lst, fill=fill, outline=outline)
+
+    def draw_image(self, x, y, filename, scale=(1, 1)):
+        if filename not in self.image_cache:
+            self.image_cache[filename] = load_image(filename)
+        self.can.create_image((x, y), image=self.image_cache[filename])

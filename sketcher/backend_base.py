@@ -58,3 +58,6 @@ class CanvasBackend:
 
     def draw_text(self, x, y, text, **kwargs):
         pass
+
+    def draw_image(self, x, y, filename, scale=(1, 1)):
+        pass

@@ -1,5 +1,5 @@
 from .backend import get_backend
-from .common import Color
+from .common import Color, Shape
 import random
 import math
 from .config import Config
@@ -56,6 +56,8 @@ class Sketch:
         self.can.set_background(Color(color))
 
     def shape(self, shape):
+        if not isinstance(shape, Shape):
+            shape = Shape(list(shape))
         self.can.draw_shape(shape)
 
     def point(self, x, y):
@@ -76,6 +78,9 @@ class Sketch:
 
     def text(self, x, y, text, **kwargs):
         self.can.draw_text(x, y, text, **kwargs)
+
+    def image(self, x, y, image):
+        self.can.draw_image(x, y, image)
 
     def refresh(self):
         self.can.refesh()

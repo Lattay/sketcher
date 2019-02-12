@@ -1,4 +1,6 @@
+from __future__ import division
 import math
+from math import sin, cos
 color_tab = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
@@ -7,6 +9,38 @@ color_tab = {
     'blue': (0, 0, 255),
     'grey': (127, 127, 127),
 }
+
+
+class Shape:
+    def __init__(self, vertex):
+        self.vertex = vertex
+
+    def center(self):
+        n = len(self.vertex)
+        cx = sum(x for x, y in self.vertex)/n
+        cy = sum(y for x, y in self.vertex)/n
+        return cx, cy
+
+    def rotate(self, angle, center='center'):
+        newv = []
+        if center == 'center':
+            center = self.center()
+        for x, y in self.vertex:
+            dx, dy = x - center[0], y - center[1]
+            dxp = dx * cos(angle) + dy * sin(angle)
+            dyp = - dx * sin(angle) + dy * cos(angle)
+            newv.append((center[0] + dxp, center[1] + dyp))
+        return Shape(newv)
+
+    def translate(self, vec):
+        newv = []
+        for i in range(len(self.vertex)):
+            newv.append(self.vertex[i][0] + vec[0],
+                        self.vertex[i][1] + vec[1])
+        return Shape(newv)
+
+    def copy(self):
+        return Shape(self.vertex.copy())
 
 
 class Color:
