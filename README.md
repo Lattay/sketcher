@@ -46,7 +46,7 @@ $ python3 path/to/your/sketch.py
 # About graphical backend
 
 To produce graphical output __sketcher__ will use several possible backends in
-the future. For now only tkinter is partially implemented.
+the future. For now only tkinter is implemented but it work well.
 
 A pyglet backend is in progress and tkinter will be finalised soon (only text is not implemented).
 

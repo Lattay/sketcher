@@ -26,6 +26,7 @@ class Backend(CanvasBackend):
         self.stroke_color = Color('black')
         self.fill_color = Color('red')
         self.back_color = Color('white')
+        self.image_cache = {}
 
         def add_event(type):
             def adder(ev):
