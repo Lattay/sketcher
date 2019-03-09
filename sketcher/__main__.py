@@ -1,8 +1,7 @@
 """
 This just print an empty sketch to help user starting.
 """
-empty = """
-#!/usr/bin/env python
+empty = """#!/usr/bin/env python
 from sketcher import sketch, Sketch
 
 
@@ -13,6 +12,5 @@ class Sk(Sketch):
         pass  # Here come the initialisation
 
     def loop(self):
-        pass  # Here come the per-frame actions
-"""
+        pass  # Here come the per-frame actions"""
 print(empty)
