@@ -16,6 +16,7 @@ except ImportError:
     def load_image(filename):
         return PhotoImage(filename)
 
+
 class Backend(CanvasBackend):
     def __init__(self):
         CanvasBackend.__init__(self)
@@ -84,15 +85,15 @@ class Backend(CanvasBackend):
                     print(ev.keycode, ev.keysym)
                     raise NotImplementedError
             elif ev_type == 'mouse_move':
-                self.__mouse_state.pos = (ev.x, ev.y)
+                self.__mouse_state.pos = (ev.x, self.size[1] - ev.y)
 
             elif ev_type == 'mouse_press':
                 self.__mouse_state.pressed.add(ev.num)
-                self.__mouse_state.pos = (ev.x, ev.y)
+                self.__mouse_state.pos = (ev.x, self.size[1] - ev.y)
 
             elif ev_type == 'mouse_release':
                 self.__mouse_state.released.add(ev.num)
-                self.__mouse_state.pos = (ev.x, ev.y)
+                self.__mouse_state.pos = (ev.x, self.size[1] - ev.y)
         self.__mouse_state.clean()
         self.__keyboard_state.clean()
 
@@ -130,22 +131,26 @@ class Backend(CanvasBackend):
     def draw_point(self, x, y):
         fill = self.stroke_color.hashtag() if self.stroke else ''
         self.__pix.put(fill)
-        self.can.create_image((x, y), image=self.__pix)
+        self.can.create_image((x, self.size[1] - y), image=self.__pix)
 
     def draw_line(self, x1, y1, x2, y2):
         fill = self.stroke_color.hashtag() if self.stroke else ''
-        self.can.create_line(x1, y1, x2, y2, fill=fill)
+        self.can.create_line(x1, self.size[1] - y1,
+                             x2, self.size[1] - y2,
+                             fill=fill)
 
     def draw_rectangle(self, x, y, w, h):
         fill = self.fill_color.hashtag() if self.fill else ''
         outline = self.stroke_color.hashtag() if self.stroke else ''
-        self.can.create_rectangle(x, y, x+w, y+h, fill=fill, outline=outline)
+        self.can.create_rectangle(x, self.size[1] - y, x+w,
+                                  self.size[1] - y - h,
+                                  fill=fill, outline=outline)
 
     def draw_ellipse(self, x, y, a, b):
         x0 = x - a/2
         x1 = x + a/2
-        y0 = y - b/2
-        y1 = y + b/2
+        y0 = self.size[1] - y + b/2
+        y1 = self.size[1] - y - b/2
         fill = self.fill_color.hashtag() if self.fill else ''
         outline = self.stroke_color.hashtag() if self.stroke else ''
         self.can.create_oval(x0, y0, x1, y1, fill=fill, outline=outline)
@@ -155,13 +160,13 @@ class Backend(CanvasBackend):
             font = kwargs['font']
         else:
             font = tkfont.Font(self.win)
-        self.can.create_text(x, y, text=text, font=font)
+        self.can.create_text(x, self.size[1] - y, text=text, font=font)
 
     def draw_shape(self, shape):
         lst = []
         for x, y in shape.vertex:
             lst.append(x)
-            lst.append(y)
+            lst.append(self.size[1] - y)
         fill = self.fill_color.hashtag() if self.fill else ''
         outline = self.stroke_color.hashtag() if self.stroke else ''
         self.can.create_polygon(*lst, fill=fill, outline=outline)
@@ -169,4 +174,5 @@ class Backend(CanvasBackend):
     def draw_image(self, x, y, filename, scale=(1, 1)):
         if filename not in self.image_cache:
             self.image_cache[filename] = load_image(filename)
-        self.can.create_image((x, y), image=self.image_cache[filename])
+        self.can.create_image((x, self.size[1] - y),
+                              image=self.image_cache[filename])
