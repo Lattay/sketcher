@@ -11,36 +11,160 @@ color_tab = {
 }
 
 
+class Vec2:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return 'Vec2({}, {})'.format(self.x, self.y)
+
+    def __eq__(self, other):
+        return (isinstance(other, Vec2)
+                and self.x == other.x
+                and self.y == other.y)
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __getitem__(self, n):
+        if n == 0 or n == 'x':
+            return self.x
+        elif n == 1 or n == 'y':
+            return self.y
+        else:
+            raise IndexError('vector index unknown')
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
+    def __add__(self, other):
+        assert isinstance(other, Vec2)
+        return Vec2(self.x+other.x, self.y+other.y)
+
+    def __sub__(self, other):
+        assert isinstance(other, Vec2)
+        return Vec2(self.x-other.x, self.y-other.y)
+
+    def __neg__(self):
+        return Vec2(-self.x, -self.y)
+
+    def __mul__(self, a):
+        assert isinstance(a, (float, int))
+        return Vec2(self.x*a, self.y*a)
+
+    def __rmul__(self, a):
+        return self * a
+
+    def __truediv__(self, a):
+        assert isinstance(a, (float, int))
+        return Vec2(self.x/a, self.y/a)
+
+    def rotate(self, angle):
+        xp = self.x * cos(angle) - self.y * sin(angle)
+        yp = self.x * sin(angle) + self.y * cos(angle)
+        return Vec2(xp, yp)
+
+    def dot(self, other):
+        assert isinstance(other, Vec2)
+        return self.x * other.x + self.y * other.y
+
+    def det(self, other):
+        assert isinstance(other, Vec2)
+        return self.x * other.y - self.y * other.x
+
+    def norm(self):
+        return (self.x**2 + self.y**2)**0.5
+
+
 class Shape:
     def __init__(self, vertex):
-        self.vertex = vertex
+        assert len(vertex) >= 3
+        self.vertex = list(Vec2(x, y) for x, y in vertex)
+
+    def __iter__(self):
+        for v in self.vertex:
+            yield v
 
     def center(self):
         n = len(self.vertex)
-        cx = sum(x for x, y in self.vertex)/n
-        cy = sum(y for x, y in self.vertex)/n
-        return cx, cy
+        return sum(self.vertex, Vec2(0, 0))/n
 
-    def rotate(self, angle, center='center'):
-        newv = []
-        if center == 'center':
-            center = self.center()
-        for x, y in self.vertex:
-            dx, dy = x - center[0], y - center[1]
-            dxp = dx * cos(angle) + dy * sin(angle)
-            dyp = - dx * sin(angle) + dy * cos(angle)
-            newv.append((center[0] + dxp, center[1] + dyp))
-        return Shape(newv)
+    def rotate(self, angle, pivot='center'):
+        if pivot == 'center':
+            pivot = self.center()
+        else:
+            pivot = Vec2(*pivot)
+        return self.__class__([
+            ((v - pivot).rotate(angle) + pivot) for v in self.vertex
+        ])
 
     def translate(self, vec):
-        newv = []
-        for i in range(len(self.vertex)):
-            newv.append(self.vertex[i][0] + vec[0],
-                        self.vertex[i][1] + vec[1])
-        return Shape(newv)
+        vec = Vec2(*vec)
+        return Shape([v + vec for v in self.vertex])
 
     def copy(self):
         return Shape(self.vertex.copy())
+
+    def to_tris(self):
+        '''
+            Break a polygon into several triangles
+        '''
+        def is_ear(vtx, k):
+            n = len(vtx)
+            a, b, c = vtx[k], vtx[(k+1) % n], vtx[(k+2) % n]
+            ab = b - c
+            ac = c - a
+            bc = c - b
+            if ab.det(bc) > 0:
+                return False
+            else:
+                return True
+            for i in range(len(vtx)):
+                if i == k or i == (k+1) % n or i == (k+2) % n:
+                    continue
+                else:
+                    p = vtx[i]
+                    ap = p - a
+                    bp = p - b
+                    cp = p - c
+                    if ap.det(ab) * ap.det(ac) <= 0 \
+                       and bp.det(bc) * bp.det(-ab) <= 0 \
+                       and cp.det(-ac) * cp.det(-bc) <= 0:
+                        return False
+            return True
+
+        tris = []
+        vertex = self.vertex.copy()
+        cursor = 0
+
+        nv = len(vertex)
+        while nv > 3:
+            stcr = cursor
+            while not is_ear(vertex, cursor):
+                cursor = (cursor + 1) % nv
+                if cursor == stcr:
+                    raise Exception('Cannot split this shape into triangles.'
+                                    ' Make sure vertex are given in clock-wise'
+                                    ' order.')
+            tris.append(Tri((vertex[cursor],
+                             vertex[(cursor+1) % nv],
+                             vertex[(cursor+2) % nv])))
+            vertex.pop((cursor+1) % nv)
+            nv -= 1
+        tris.append(Tri(vertex))
+
+        return tris
+
+
+class Tri(Shape):
+    def __init__(self, vertex):
+        assert len(vertex) == 3, "Tri have 3 vertex by definition."
+        Shape.__init__(self, vertex)
+
+    def to_tris(self):
+        return (self,)
 
 
 class Color:
@@ -67,8 +191,8 @@ class Color:
         elif hasattr(col, '__iter__'):
             self.r, self.g, self.b = col
         else:
-            print(type(col))
-            exit()
+            raise TypeError('{} is not a valid color initial value.'
+                            .format(col))
 
     def hashtag(self):
         r = hex(int(self.r))[2:]

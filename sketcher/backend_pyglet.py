@@ -16,7 +16,7 @@ def mouse_button(b):
 
 
 def key_symbol(b):
-    return pg.window.key.symbol_string(b)
+    return pg.window.key.symbol_string(b).lower()
 
 
 class Backend(CanvasBackend):
@@ -24,11 +24,14 @@ class Backend(CanvasBackend):
         CanvasBackend.__init__(self)
         self.win = pg.window.Window(vsync=0)
         self.event_queue = Queue()
+        self.size = (100, 100)
 
         self.stroke_color = Color('black')
         self.fill_color = Color('red')
         self.back_color = Color('white')
         self.batch = pg.graphics.Batch()
+        self.redraw_back = True
+        self.labels = []
 
         @self.win.event
         def on_key_press(symbol, modifiers):
@@ -79,29 +82,40 @@ class Backend(CanvasBackend):
             if ev_type == 'key_press':
                 self.__keyboard_state.pressed.add(key_symbol(ev[0]))
             elif ev_type == 'key_release':
-                self.__keyboard_state.pressed.add(key_symbol(ev[0]))
+                self.__keyboard_state.released.add(key_symbol(ev[0]))
             elif ev_type == 'mouse_move':
-                self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
+                self.__mouse_state.pos = (ev[0], ev[1])
 
             elif ev_type == 'mouse_press':
                 self.__mouse_state.pressed.add(mouse_button(ev[2]))
-                self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
+                self.__mouse_state.pos = (ev[0], ev[1])
 
             elif ev_type == 'mouse_release':
-                self.__mouse_state.pressed.add(mouse_button(ev[2]))
-                self.__mouse_state.pos = (ev[0], self.size[1]-ev[1])
+                self.__mouse_state.released.add(mouse_button(ev[2]))
+                self.__mouse_state.pos = (ev[0], ev[1])
 
         self.__mouse_state.clean()
         self.__keyboard_state.clean()
 
         self.win.clear()
         self.user_loop()
-        self.background.draw()
+        if self.redraw_back:
+            w, h = self.size
+            back = pg.graphics.Batch()
+            back.add(4, pg.gl.GL_QUADS, None,
+                     ('v2i', (0, 0, w, 0, w, h, 0, h)),
+                     ('c3B', self.back_color.tupple255()*4))
+            back.draw()
+            self.redraw_back = False
         self.batch.draw()
+        for lab in self.labels:
+            lab.draw()
+        self.labels = []
 
     def clear(self):
         # clear canvas
-        self.win.clear()
+        self.redraw_back = True
+        self.batch = pg.graphics.Batch()
 
     def set_fill(self, yes):
         self.fill = yes
@@ -127,6 +141,7 @@ class Backend(CanvasBackend):
 
     def set_background(self, color):
         self.back_color = color
+        self.redraw_back = True
         # set background color
 
     def draw_point(self, x, y):
@@ -140,13 +155,44 @@ class Backend(CanvasBackend):
                        ('c3B', self.stroke_color.tupple255()*2))
 
     def draw_rectangle(self, x, y, w, h):
-        pass
+        x0, y0 = float(x), float(y)
+        x1, y1 = float(x+w), float(y+h)
+        if self.fill:
+            self.batch.add(4, pg.gl.GL_QUADS, None,
+                           ('v2f', (x0, y0, x1, y0, x1, y1, x0, y1)),
+                           ('c3B', self.fill_color.tupple255()*4))
+        if self.stroke:
+            self.draw_line(x0, y0, x1, y0)
+            self.draw_line(x1, y0, x1, y1)
+            self.draw_line(x1, y1, x0, y1)
+            self.draw_line(x0, y1, x0, y0)
 
     def draw_ellipse(self, x, y, a, b):
         pass
 
     def draw_text(self, x, y, text, **kwargs):
-        pass
+        opts = {}
+        if 'font' in kwargs:
+            opts['font_name'] = kwargs['font']
+        if 'size' in kwargs:
+            opts['font_size'] = kwargs['size']
+
+        self.labels.append(pg.text.Label(text, x=x, y=y, **opts))
 
     def draw_shape(self, shape):
-        pass
+        if self.fill:
+            vtx = []
+            for tri in shape.to_tris():
+                for v in tri:
+                    vtx.extend(v)
+            n = len(vtx)//2
+            self.batch.add(n, pg.gl.GL_TRIANGLES, None,
+                           ('v2f', vtx),
+                           ('c3B', self.fill_color.tupple255()*n))
+        if self.stroke:
+            vtx = []
+            for i in range(len(shape.vertex)):
+                if i == len(shape.vertex)-1:
+                    self.draw_line(*shape.vertex[i], *shape.vertex[0])
+                else:
+                    self.draw_line(*shape.vertex[i], *shape.vertex[i+1])

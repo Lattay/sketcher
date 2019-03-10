@@ -74,13 +74,13 @@ class Backend(CanvasBackend):
             ev_type, ev = self.event_queue.get()
             if ev_type == 'key_press':
                 if ev.keysym:
-                    self.__keyboard_state.pressed.add(ev.keysym)
+                    self.__keyboard_state.pressed.add(ev.keysym.lower())
                 else:
                     print(ev.keycode, ev.keysym)
                     raise NotImplementedError
             elif ev_type == 'key_release':
                 if ev.keysym:
-                    self.__keyboard_state.released.add(ev.keysym)
+                    self.__keyboard_state.released.add(ev.keysym.lower())
                 else:
                     print(ev.keycode, ev.keysym)
                     raise NotImplementedError
@@ -164,7 +164,7 @@ class Backend(CanvasBackend):
 
     def draw_shape(self, shape):
         lst = []
-        for x, y in shape.vertex:
+        for x, y in shape:
             lst.append(x)
             lst.append(self.size[1] - y)
         fill = self.fill_color.hashtag() if self.fill else ''
