@@ -1,12 +1,12 @@
 # What is this ?
 
-__sketcher__ is a python module which may be used to quicly create
-littles program (sketches) that produce graphical output.
-It is obviously deeply inspired by processing and try to get the same feeling
-in the python world. It is different from processing.py in that it has no
-dependencies to Java environnement and it use a more Pythonic approach of a
-sketch. By the way __sketcher__ does not try to stick to the processing API but
-a lot of methods names a the same.
+__sketcher__ is a python module which may be used to quicly create littles
+program (sketches) that produce graphical output.  It is obviously deeply
+inspired by processing and try to get the same feeling in the python world. It
+is different from processing.py in that it has no dependencies to Java
+environnement and it use a more Pythonic approach of a sketch. By the way
+__sketcher__ does not try to stick to the processing API but a lot of methods
+names are the same.
 
 # How to install it ?
 
@@ -43,12 +43,14 @@ Then you can run a sketch like this :
 $ python3 path/to/your/sketch.py
 ```
 
+Further explanations are available [here](https://github.com/Lattay/sketcher/tree/master/docs).
+
 # About graphical backend
 
-To produce graphical output __sketcher__ will use several possible backends in
-the future. For now only tkinter is implemented but it work well.
-
-A pyglet backend is in progress and tkinter will be finalised soon (only text is not implemented).
+To produce graphical output __sketcher__ can use different backends.
+For now tkinter and pyglet are implemented. The two backends expose roughly
+the same features however some differences remains. If you notice any let me
+know so I can improve the compatibility.
 
 # Contribute
 
