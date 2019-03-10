@@ -121,25 +121,23 @@ class Shape:
             n = len(vtx)
             a, b, c = vtx[k], vtx[(k+1) % n], vtx[(k+2) % n]
             ab = b - a
-            # ac = c - a
+            ac = c - a
             bc = c - b
             if ab.det(bc) > 0:
                 return False
-            else:
-                return True
-            # for i in range(len(vtx)):
-            #     if i == k or i == (k+1) % n or i == (k+2) % n:
-            #         continue
-            #     else:
-            #         p = vtx[i]
-            #         ap = p - a
-            #         bp = p - b
-            #         cp = p - c
-            #         if ap.det(ab) * ap.det(ac) <= 0 \
-            #            and bp.det(bc) * bp.det(-ab) <= 0 \
-            #            and cp.det(-ac) * cp.det(-bc) <= 0:
-            #             return False
-            # return True
+            for i in range(len(vtx)):
+                if i == k or i == (k+1) % n or i == (k+2) % n:
+                    continue
+                else:
+                    p = vtx[i]
+                    ap = p - a
+                    bp = p - b
+                    cp = p - c
+                    if ap.det(ab) * ap.det(ac) <= 0 \
+                       and bp.det(bc) * bp.det(-ab) <= 0 \
+                       and cp.det(-ac) * cp.det(-bc) <= 0:
+                        return False
+            return True
 
         tris = []
         vertex = self.vertex.copy()
@@ -179,7 +177,6 @@ class Ellipse(Shape):
             b = a
         if n == 0:
             n = max(16, int(max(a, b)/2) + 1)
-        print(n)
 
         self.a = a
         self.b = b
@@ -254,6 +251,13 @@ class MouseState:
         self.pressed = set()
         self.released = set()
 
+    def copy(self):
+        cp = MouseState()
+        cp.pos = self.pos.copy()
+        cp.pressed = self.pressed.copy()
+        cp.released = self.released.copy()
+        return cp
+
     def flush(self):
         self.pressed.clear()
         self.released.clear()
@@ -270,6 +274,12 @@ class KeyboardState:
     def __init__(self):
         self.pressed = set()
         self.released = set()
+
+    def copy(self):
+        cp = KeyboardState()
+        cp.pressed = self.pressed.copy()
+        cp.released = self.released.copy()
+        return cp
 
     def flush(self):
         self.pressed.clear()

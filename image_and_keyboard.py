@@ -1,6 +1,6 @@
 from sketcher import sketch, config
 
-w, h = 800, 800
+w, h = 500, 500
 dt = 0.01
 
 
@@ -38,6 +38,7 @@ class Ball:
             self.ay = 0
 
     def draw(self, sk):
+        sk.ellipse(self.x, self.y, 35)
         sk.image(self.x, self.y, 'horrible_smiley.png')
 
 

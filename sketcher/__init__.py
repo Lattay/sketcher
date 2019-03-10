@@ -12,83 +12,84 @@ config = Config()
 class Sketch:
     def __init__(self):
         if not hasattr(self, 'Backend'):
-            self.Backend = get_backend()
+            self.__Backend = get_backend()
+        self._can = None
 
-    def start(self):
-        self.can = self.Backend()
-        self.can.init()
-        self.can.start(self.setup, self.loop)
+    def __start(self):
+        self._can = self.__Backend()
+        self._can.init()
+        self._can.start(self.setup, self.loop)
 
     def clear(self):
-        self.can.clear()
+        self._can.clear()
 
     def frame(self, l):
-        self.can.set_frame(l)
+        self._can.set_frame(l)
 
     def fill(self):
-        self.can.set_fill(True)
+        self._can.set_fill(True)
 
     def no_fill(self):
-        self.can.set_fill(False)
+        self._can.set_fill(False)
 
     def stroke(self):
-        self.can.set_stroke(True)
+        self._can.set_stroke(True)
 
     def no_stroke(self):
-        self.can.set_stroke(False)
+        self._can.set_stroke(False)
 
     def fill_color(self, col):
-        self.can.set_fill_color(col)
+        self._can.set_fill_color(col)
 
     def stroke_color(self, col):
-        self.can.set_stroke_color(col)
+        self._can.set_stroke_color(col)
 
     def mouse_state(self):
-        return self.can.get_mouse_state()
+        return self._can.get_mouse_state()
 
     def keyboard_state(self, ):
-        return self.can.get_keyboard_state()
+        return self._can.get_keyboard_state()
 
     def size(self, w, h):
-        self.can.set_size(w, h)
+        self._can.set_size(w, h)
 
     def background(self, color):
-        self.can.set_background(Color(color))
+        self._can.set_background(Color(color))
 
     def shape(self, shape):
         if not isinstance(shape, Shape):
             shape = Shape(list(shape))
-        self.can.draw_shape(shape)
+        self._can.draw_shape(shape)
 
     def point(self, x, y):
-        self.can.draw_point(x, y)
+        self._can.draw_point(x, y)
 
     def line(self, x1, y1, x2, y2):
-        self.can.draw_line(x1, y1, x2, y2)
+        self._can.draw_line(x1, y1, x2, y2)
 
     def rectangle(self, x, y, w, h=None):
         if h is None:
             h = w
-        self.can.draw_rectangle(x, y, w, h)
+        self._can.draw_rectangle(x, y, w, h)
 
     def ellipse(self, x, y, a, b=None, n=None, angle=None):
         if b is None:
             b = a
-            opts = {}
+        opts = {}
         if n:
             opts['n'] = n
         if angle:
             opts['angle'] = angle
-        self.can.draw_ellipse(x, y, a, b, **opts)
+        self._can.draw_ellipse(x, y, a, b, **opts)
 
     def text(self, x, y, text, **kwargs):
-        self.can.draw_text(x, y, text, **kwargs)
+        self._can.draw_text(x, y, text, **kwargs)
 
     def image(self, x, y, image):
-        self.can.draw_image(x, y, image)
+        self._can.draw_image(x, y, image)
 
     def refresh(self):
-        self.can.refesh()
+        self._can.refesh()
 
 
 Sketch.m = math
@@ -107,7 +108,7 @@ def sketch(sk):
     else:
         class MySketch(Sketch, sk):
             pass
-    MySketch.Backend = get_backend(config.backend_use)
+    MySketch._Sketch__Backend = get_backend(config.backend_use)
     MySketch.__name__ = sk.__name__
-    MySketch().start()
+    MySketch()._Sketch__start()
     return MySketch

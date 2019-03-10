@@ -31,7 +31,8 @@ class Backend(CanvasBackend):
         self.back_color = Color('white')
         self.batch = pg.graphics.Batch()
         self.redraw_back = True
-        self.labels = []
+        self.image_cache = {}
+        self.sprites = []
 
         @self.win.event
         def on_key_press(symbol, modifiers):
@@ -108,10 +109,8 @@ class Backend(CanvasBackend):
             back.draw()
             self.redraw_back = False
         self.batch.draw()
-        for lab in self.labels:
-            lab.draw()
-            print("draw lab")
-        self.labels = []
+
+        self.sprites.clear()
 
     def clear(self):
         # clear canvas
@@ -183,7 +182,7 @@ class Backend(CanvasBackend):
         else:
             opts['color'] = (0, 0, 0, 255)
 
-        self.labels.append(pg.text.Label(text, x=x, y=y, **opts))
+        pg.text.Label(text, batch=self.batch, x=x, y=y, **opts)
 
     def draw_shape(self, shape):
         if self.fill:
@@ -202,3 +201,13 @@ class Backend(CanvasBackend):
                     self.draw_line(*shape.vertex[i], *shape.vertex[0])
                 else:
                     self.draw_line(*shape.vertex[i], *shape.vertex[i+1])
+
+    def draw_image(self, x, y, filename, scale=(1, 1)):
+        if filename not in self.image_cache:
+            img = pg.image.load(filename)
+            img.anchor_x = img.width//2
+            img.anchor_y = img.height//2
+            self.image_cache[filename] = img
+        sp = pg.sprite.Sprite(self.image_cache[filename], batch=self.batch)
+        sp.update(x, y, scale_x=scale[0], scale_y=scale[1])
+        self.sprites.append(sp)

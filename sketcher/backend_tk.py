@@ -115,10 +115,10 @@ class Backend(CanvasBackend):
         self.fill_color = Color(color)
 
     def get_mouse_state(self):
-        return self.__mouse_state
+        return self.__mouse_state.copy()
 
     def get_keyboard_state(self):
-        return self.__keyboard_state
+        return self.__keyboard_state.copy()
 
     def set_size(self, w, h):
         self.size = (w, h)
