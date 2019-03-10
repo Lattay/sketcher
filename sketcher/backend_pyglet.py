@@ -202,12 +202,24 @@ class Backend(CanvasBackend):
                 else:
                     self.draw_line(*shape.vertex[i], *shape.vertex[i+1])
 
-    def draw_image(self, x, y, filename, scale=(1, 1)):
+    def draw_image(self, x, y, filename, anchor='center', scale=(1, 1)):
         if filename not in self.image_cache:
-            img = pg.image.load(filename)
-            img.anchor_x = img.width//2
-            img.anchor_y = img.height//2
-            self.image_cache[filename] = img
-        sp = pg.sprite.Sprite(self.image_cache[filename], batch=self.batch)
+            self.image_cache[filename] = pg.image.load(filename)
+        img = self.image_cache[filename]
+        if anchor == 'center' or anchor == 'n' or anchor == 's':
+            img.anchor_x == img.width//2
+        elif 'w' in anchor:
+            img.anchor_x = 0
+        else:
+            img.anchor_x = img.width
+
+        if anchor == 'center' or anchor == 'w' or anchor == 'e':
+            img.anchor_y == img.width//2
+        elif 's' in anchor:
+            img.anchor_y = 0
+        else:
+            img.anchor_y = img.width
+
+        sp = pg.sprite.Sprite(img, batch=self.batch)
         sp.update(x, y, scale_x=scale[0], scale_y=scale[1])
         self.sprites.append(sp)

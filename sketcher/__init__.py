@@ -72,7 +72,7 @@ class Sketch:
             h = w
         self._can.draw_rectangle(x, y, w, h)
 
-    def ellipse(self, x, y, a, b=None, n=None, angle=None):
+    def ellipse(self, x, y, a, b=None, angle=None, n=None):
         if b is None:
             b = a
         opts = {}
@@ -85,12 +85,8 @@ class Sketch:
     def text(self, x, y, text, **kwargs):
         self._can.draw_text(x, y, text, **kwargs)
 
-    def image(self, x, y, image):
-        self._can.draw_image(x, y, image)
-
-    def refresh(self):
-        self._can.refesh()
-
+    def image(self, x, y, image, anchor='center', scale=(1, 1)):
+        self._can.draw_image(x, y, image, anchor, scale)
 
 Sketch.m = math
 Sketch.rd = random

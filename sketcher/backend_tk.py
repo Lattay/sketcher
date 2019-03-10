@@ -171,8 +171,9 @@ class Backend(CanvasBackend):
         outline = self.stroke_color.hashtag() if self.stroke else ''
         self.can.create_polygon(*lst, fill=fill, outline=outline)
 
-    def draw_image(self, x, y, filename, scale=(1, 1)):
+    def draw_image(self, x, y, filename, anchor='center', scale=(1, 1)):
         if filename not in self.image_cache:
             self.image_cache[filename] = load_image(filename)
         self.can.create_image((x, self.size[1] - y),
-                              image=self.image_cache[filename])
+                              image=self.image_cache[filename],
+                              anchor=anchor)
