@@ -1,8 +1,8 @@
-from sketcher import sketch
+from sketcher import sketch, config
 
 w, h = 800, 800
 
-tri = [(w/2, 0), (0, h), (w, h)]
+tri = [(w/2, h), (0, 0), (w, 0)]
 
 
 @sketch

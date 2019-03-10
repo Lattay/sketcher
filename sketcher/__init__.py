@@ -71,10 +71,15 @@ class Sketch:
             h = w
         self.can.draw_rectangle(x, y, w, h)
 
-    def ellipse(self, x, y, a, b=None):
+    def ellipse(self, x, y, a, b=None, n=None, angle=None):
         if b is None:
             b = a
-        self.can.draw_ellipse(x, y, a, b)
+            opts = {}
+        if n:
+            opts['n'] = n
+        if angle:
+            opts['angle'] = angle
+        self.can.draw_ellipse(x, y, a, b, **opts)
 
     def text(self, x, y, text, **kwargs):
         self.can.draw_text(x, y, text, **kwargs)

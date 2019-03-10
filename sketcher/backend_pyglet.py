@@ -1,5 +1,5 @@
 from .backend_base import CanvasBackend
-from .common import KeyboardState, MouseState, Color
+from .common import KeyboardState, MouseState, Color, Ellipse
 import pyglet as pg
 from queue import Queue
 
@@ -59,8 +59,8 @@ class Backend(CanvasBackend):
         self.__mouse_state = MouseState()
 
     def init(self):
-        pass
         # setup background, canvas, focus
+        pass
 
     def start(self, setup, loop):
         setup()
@@ -110,6 +110,7 @@ class Backend(CanvasBackend):
         self.batch.draw()
         for lab in self.labels:
             lab.draw()
+            print("draw lab")
         self.labels = []
 
     def clear(self):
@@ -140,13 +141,13 @@ class Backend(CanvasBackend):
         self.win.set_size(w, h)
 
     def set_background(self, color):
+        # set background color
         self.back_color = color
         self.redraw_back = True
-        # set background color
 
     def draw_point(self, x, y):
         self.batch.add(1, pg.gl.GL_POINTS, None,
-                       ('v2f', float(x), float(y)),
+                       ('v2f', (float(x), float(y))),
                        ('c3B', self.stroke_color.tupple255()))
 
     def draw_line(self, x1, y1, x2, y2):
@@ -167,8 +168,8 @@ class Backend(CanvasBackend):
             self.draw_line(x1, y1, x0, y1)
             self.draw_line(x0, y1, x0, y0)
 
-    def draw_ellipse(self, x, y, a, b):
-        pass
+    def draw_ellipse(self, x, y, a, b=0, anlge=0, n=0):
+        self.draw_shape(Ellipse(x, y, a, b, angle=0, n=n))
 
     def draw_text(self, x, y, text, **kwargs):
         opts = {}
@@ -176,6 +177,11 @@ class Backend(CanvasBackend):
             opts['font_name'] = kwargs['font']
         if 'size' in kwargs:
             opts['font_size'] = kwargs['size']
+
+        if 'color' in kwargs:
+            opts['color'] = Color(kwargs['color']).tupple255alpha()
+        else:
+            opts['color'] = (0, 0, 0, 255)
 
         self.labels.append(pg.text.Label(text, x=x, y=y, **opts))
 

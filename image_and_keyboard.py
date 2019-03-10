@@ -1,4 +1,4 @@
-from sketcher import sketch
+from sketcher import sketch, config
 
 w, h = 800, 800
 dt = 0.01
@@ -18,7 +18,7 @@ class Ball:
         # friction
 
         self.ax = acc[0]
-        self.ay = acc[1] + 1000
+        self.ay = acc[1] - 1000
         nv = (self.vx*self.vx + self.vy*self.vy)**0.5
         self.ax -= dt*self.vx*nv
         self.ay -= dt*self.vy*nv
@@ -32,9 +32,9 @@ class Ball:
         self.vy += dt*self.ay
 
         # floor
-        if self.y > h - 28:
+        if self.y < 28:
             self.vy = 0
-            self.y = h - 28
+            self.y = 28
             self.ay = 0
 
     def draw(self, sk):
@@ -55,13 +55,13 @@ class Sk:
         push = [0, 0]
 
         key = self.keyboard_state()
-        if 'Up' in key.pressed:
-            push[1] -= 9000
-        if 'Down' in key.pressed:
+        if 'up' in key.pressed:
             push[1] += 9000
-        if 'Left' in key.pressed:
+        if 'down' in key.pressed:
+            push[1] -= 9000
+        if 'left' in key.pressed:
             push[0] -= 2000
-        if 'Right' in key.pressed:
+        if 'right' in key.pressed:
             push[0] += 2000
 
         self.ball.accelerate(push)

@@ -17,4 +17,4 @@ class Sk:
             self.pressed = False
         if self.pressed:
             x, y = m.pos
-            self.ellipse(x, y, 100)
+            self.ellipse(x, y, 100, 50)

@@ -9,7 +9,7 @@ class NoBackend(BaseException):
 
 
 supported_backends = [
-    "pyglet",  # not ready yet
+    "pyglet",
     "tkinter",
 ]
 
@@ -25,7 +25,6 @@ try:
     have_tk = True
 except ImportError:
     have_tk = False
-# have_pyglet = False  # in progress
 
 
 def get_backend(use='auto'):

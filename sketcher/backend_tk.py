@@ -146,7 +146,7 @@ class Backend(CanvasBackend):
                                   self.size[1] - y - h,
                                   fill=fill, outline=outline)
 
-    def draw_ellipse(self, x, y, a, b):
+    def draw_ellipse(self, x, y, a, b, angle=0, n=0):
         x0 = x - a/2
         x1 = x + a/2
         y0 = self.size[1] - y + b/2

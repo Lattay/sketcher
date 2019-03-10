@@ -10,4 +10,4 @@ class Sk:
         self.clear()
         key = self.keyboard_state()
         if 'a' in key.pressed:
-            self.text(100, 100, 'a', font='mono')
+            self.text(100, 100, 'a')

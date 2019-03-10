@@ -1,6 +1,6 @@
 from __future__ import division
 import math
-from math import sin, cos
+from math import sin, cos, pi
 color_tab = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
@@ -82,6 +82,7 @@ class Shape:
     def __init__(self, vertex):
         assert len(vertex) >= 3
         self.vertex = list(Vec2(x, y) for x, y in vertex)
+        self._tri_cache = None
 
     def __iter__(self):
         for v in self.vertex:
@@ -102,38 +103,43 @@ class Shape:
 
     def translate(self, vec):
         vec = Vec2(*vec)
-        return Shape([v + vec for v in self.vertex])
+        return self.__class__([v + vec for v in self.vertex])
 
     def copy(self):
-        return Shape(self.vertex.copy())
+        return self.__class__(self.vertex.copy())
 
     def to_tris(self):
+        if not self._tri_cache:
+            self._tri_cache = self._to_tris()
+        return self._tri_cache
+
+    def _to_tris(self):
         '''
             Break a polygon into several triangles
         '''
         def is_ear(vtx, k):
             n = len(vtx)
             a, b, c = vtx[k], vtx[(k+1) % n], vtx[(k+2) % n]
-            ab = b - c
-            ac = c - a
+            ab = b - a
+            # ac = c - a
             bc = c - b
             if ab.det(bc) > 0:
                 return False
             else:
                 return True
-            for i in range(len(vtx)):
-                if i == k or i == (k+1) % n or i == (k+2) % n:
-                    continue
-                else:
-                    p = vtx[i]
-                    ap = p - a
-                    bp = p - b
-                    cp = p - c
-                    if ap.det(ab) * ap.det(ac) <= 0 \
-                       and bp.det(bc) * bp.det(-ab) <= 0 \
-                       and cp.det(-ac) * cp.det(-bc) <= 0:
-                        return False
-            return True
+            # for i in range(len(vtx)):
+            #     if i == k or i == (k+1) % n or i == (k+2) % n:
+            #         continue
+            #     else:
+            #         p = vtx[i]
+            #         ap = p - a
+            #         bp = p - b
+            #         cp = p - c
+            #         if ap.det(ab) * ap.det(ac) <= 0 \
+            #            and bp.det(bc) * bp.det(-ab) <= 0 \
+            #            and cp.det(-ac) * cp.det(-bc) <= 0:
+            #             return False
+            # return True
 
         tris = []
         vertex = self.vertex.copy()
@@ -163,8 +169,37 @@ class Tri(Shape):
         assert len(vertex) == 3, "Tri have 3 vertex by definition."
         Shape.__init__(self, vertex)
 
-    def to_tris(self):
+    def _to_tris(self):
         return (self,)
+
+
+class Ellipse(Shape):
+    def __init__(self, x, y, a, b=0, angle=0, n=0):
+        if b == 0:
+            b = a
+        if n == 0:
+            n = max(16, int(max(a, b)/2) + 1)
+        print(n)
+
+        self.a = a
+        self.b = b
+        self.angle = angle
+        self.center = Vec2(x, y)
+
+        step = 2*pi/n
+        vertex = [
+            Vec2(
+                a * cos(k*step),
+                b * sin(k*step)
+            ).rotate(angle) + self.center for k in range(n)
+        ]
+        Shape.__init__(self, vertex)
+
+    def _to_tris(self):
+        tris = []
+        for i in range(len(self.vertex)):
+            tris.append(Tri((self.center, self.vertex[i], self.vertex[i-1])))
+        return tris
 
 
 class Color:
@@ -208,6 +243,9 @@ class Color:
 
     def tupple255(self):
         return (int(self.r), int(self.g), int(self.b))
+
+    def tupple255alpha(self):
+        return (int(self.r), int(self.g), int(self.b), 255)
 
 
 class MouseState:
