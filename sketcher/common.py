@@ -1,6 +1,6 @@
 from __future__ import division
 import math
-from math import sin, cos, pi
+from math import sin, cos, pi, acos
 color_tab = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
@@ -76,6 +76,30 @@ class Vec2:
 
     def norm(self):
         return (self.x**2 + self.y**2)**0.5
+
+    def normed(self):
+        n = self.norm()
+        if n > 0:
+            return Vec2(self.x/n, self.y/n)
+        else:
+            return self
+
+    def angle(self, other):
+        on = other.normed()
+        sn = self.normed()
+        cos = sn.dot(on)
+        sin = sn.det(on)
+        if sin > 0:
+            return acos(cos)
+        else:
+            return -acos(cos)
+
+    @classmethod
+    def from_angle(cls, angle, norm=1):
+        return cls(norm*cos(angle), norm*sin(angle))
+
+    def dist(self, other):
+        return (self - other).norm()
 
 
 class Shape:
