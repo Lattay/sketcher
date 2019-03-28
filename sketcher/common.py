@@ -270,8 +270,14 @@ class Color:
 
 
 class MouseState:
+    symbols = {
+        'left': 1,
+        'middle': 2,
+        'right': 3
+    }
+
     def __init__(self):
-        self.pos = (0, 0)
+        self._pos = Vec2(0, 0)
         self.pressed = set()
         self.released = set()
 
@@ -292,6 +298,24 @@ class MouseState:
 
         self.pressed = still_pressed
         self.released = releasing
+
+    @property
+    def pos(self):
+        return self._pos
+
+    @pos.setter
+    def pos(self, v):
+        self._pos = Vec2(*v)
+
+    def is_pressed(self, but):
+        if but in self.symbols:
+            but = self.symbols[but]
+        return but in self.pressed
+
+    def is_released(self, but):
+        if but in self.symbols:
+            but = self.symbols[but]
+        return but in self.released
 
 
 class KeyboardState:
@@ -315,3 +339,9 @@ class KeyboardState:
 
         self.pressed = still_pressed
         self.released = releasing
+
+    def is_pressed(self, key):
+        return key.lower() in self.pressed
+
+    def is_released(self, key):
+        return key.lower() in self.released
