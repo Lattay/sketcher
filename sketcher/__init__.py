@@ -12,11 +12,11 @@ config = Config()
 class Sketch:
     def __init__(self):
         if not hasattr(self, 'Backend'):
-            self.__Backend = get_backend()
+            self.Backend = get_backend()
         self._can = None
 
     def __start(self):
-        self._can = self.__Backend()
+        self._can = self.Backend()
         self._can.init()
         self._can.start(self.setup, self.loop)
 
@@ -104,7 +104,7 @@ def sketch(sk):
     else:
         class MySketch(Sketch, sk):
             pass
-    MySketch._Sketch__Backend = get_backend(config.backend_use)
+    MySketch.Backend = get_backend(config.backend_use)
     MySketch.__name__ = sk.__name__
     MySketch()._Sketch__start()
     return MySketch

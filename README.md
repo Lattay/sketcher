@@ -1,6 +1,11 @@
+# Warning
+This project is deprecated.
+Due to bugs and incoherency, as well as a relatively poorly though interface I decided to deprecate this project.
+A better scoped, better designed version may come later.
+
 # What is this ?
 
-__sketcher__ is a python module which may be used to quicly create littles
+__sketcher__ is a python module which may be used to quickly create littles
 program (sketches) that produce graphical output.  It is obviously deeply
 inspired by processing and try to get the same feeling in the python world. It
 is different from processing.py in that it has no dependencies to Java
